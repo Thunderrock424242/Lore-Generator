@@ -1,15 +1,18 @@
 package com.thunder.loregenerator.config;
 
-import com.electronwill.nightconfig.core.ConfigSpec;
 import net.neoforged.fml.config.ConfigTracker;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class LoreConfig {
-    public static final ConfigSpec CONFIG;
-    public static final ConfigSpec.ConfigValue<String> WORLD_DESCRIPTION;
-    public static final ConfigSpec.BooleanValue AI_GENERATED;
+    public static final ModConfigSpec CONFIG;
+    public static final ModConfigSpec.ConfigValue<String> WORLD_DESCRIPTION;
+    public static final ModConfigSpec.BooleanValue AI_GENERATED;
+    public static final ModConfigSpec.ConfigValue<String> OPENAI_API_KEY;
+    public static final ModConfigSpec.ConfigValue<String> LORE_GENERATION_MODE;
 
     static {
-        var builder = new ConfigSpec.Builder();
+        var builder = new ModConfigSpec.Builder();
         builder.push("server_lore");
 
         WORLD_DESCRIPTION = builder
@@ -20,11 +23,15 @@ public class LoreConfig {
                 .comment("Use AI to generate lore based on world_description")
                 .define("ai_generated", true);
 
+        OPENAI_API_KEY = builder
+                .comment("Optional OpenAI API key. Leave blank to disable live AI lore.")
+                .define("openai_api_key", "");
+
+        LORE_GENERATION_MODE = builder
+                .comment("Mode: live, fallback, or generate_and_export")
+                .define("lore_generation_mode", "fallback");
+
         builder.pop();
         CONFIG = builder.build();
-    }
-
-    public static void register() {
-        ConfigTracker.INSTANCE.load(CONFIG, Type.SERVER, "serverloregenerator-server.toml");
     }
 }

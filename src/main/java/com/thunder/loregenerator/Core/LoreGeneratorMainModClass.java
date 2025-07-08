@@ -3,11 +3,13 @@ package com.thunder.loregenerator.Core;
 import com.mojang.brigadier.CommandDispatcher;
 import com.thunder.loregenerator.config.LoreConfig;
 import com.thunder.loregenerator.lore.LoreManager;
+import com.thunder.loregenerator.lore.PreGeneratedLoreLoader;
 import com.thunder.loregenerator.registry.LoreFeatureRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
@@ -55,9 +57,7 @@ public class LoreGeneratorMainModClass {
         NeoForge.EVENT_BUS.register(this);
 
 
-        LoreConfig.register();
-
-
+        container.registerConfig(ModConfig.Type.SERVER, LoreConfig.CONFIG);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -68,8 +68,8 @@ public class LoreGeneratorMainModClass {
 
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            LoreManager.loadInitialLore();
             LoreFeatureRegistry.bootstrap();
+            PreGeneratedLoreLoader.load();
         });
     }
 

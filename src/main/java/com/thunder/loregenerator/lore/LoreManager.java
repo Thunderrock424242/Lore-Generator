@@ -1,19 +1,27 @@
 package com.thunder.loregenerator.lore;
 
 
+import com.thunder.loregenerator.config.LoreConfig;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LoreManager {
-    private static final List<GeneratedBook> BOOK_CACHE = new ArrayList<>();
 
-    public static void loadInitialLore() {
-        BOOK_CACHE.clear();
-        BOOK_CACHE.addAll(LoreBookLoader.loadBooksFromJson());
-    }
+    public static GeneratedBook getBookForTags(Set<String> tags) {
+        // ✅ 1. Check for pre-generated lore
+        GeneratedBook pregen = PreGeneratedLoreLoader.getBookForTags(tags);
+        if (pregen != null) return pregen;
 
-    public static GeneratedBook getRandomBook() {
-        if (BOOK_CACHE.isEmpty()) return null;
-        return BOOK_CACHE.get((int) (Math.random() * BOOK_CACHE.size()));
+        // ✅ 2. Use OpenAI if enabled and configured
+        String key = LoreConfig.OPENAI_API_KEY.get();
+        if (!key.isBlank() && LoreConfig.LORE_GENERATION_MODE.get().equalsIgnoreCase("live")) {
+            GeneratedBook aiBook = OpenAILoreGenerator.generateBook(tags, LoreConfig.WORLD_DESCRIPTION.get(), key);
+            if (aiBook != null) return aiBook;
+        }
+
+        // ✅ 3. Fallback to template/local generator
+        return LoreGenerator.generateBook(tags);
     }
 }

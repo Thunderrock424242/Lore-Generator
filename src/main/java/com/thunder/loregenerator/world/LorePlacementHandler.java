@@ -19,10 +19,10 @@ public class LorePlacementHandler {
         ResourceLocation biomeId = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME).getKey(biomeHolder.value());
 
         Set<String> tags = new HashSet<>();
-        tags.addAll(LoreTagDetector.detectTags(com.LoreGenerator.config.ServerLoreConfig.WORLD_DESCRIPTION.get()));
+        tags.addAll(LoreTagDetector.detectTags(com.thunder.loregenerator.config.LoreConfig.WORLD_DESCRIPTION.get()));
         tags.addAll(BiomeTagHelper.getTagsForBiome(biomeId));
 
-        var book = LoreManager.getRandomBook();
+        var book = LoreManager.getBookForTags(tags);
         if (book == null) return;
 
         LoreFeatureType feature = LoreFeatureRegistry.getWeightedFeature(tags);

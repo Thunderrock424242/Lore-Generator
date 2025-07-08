@@ -15,7 +15,8 @@ public class ItemFramePlacer {
         BlockPos pos = ctx.pos();
         Direction dir = Direction.NORTH;
 
-        ItemFrame frame = new ItemFrame(level, pos, dir, Window.Type.NORMAL);
+        // ✅ Use the correct constructor for 1.21.1
+        ItemFrame frame = new ItemFrame(level, pos, dir);
         frame.setItem(new ItemStack(Items.PAPER));
         level.addFreshEntity(frame);
     }

@@ -3,6 +3,7 @@ package com.thunder.loregenerator.lore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class LoreGenerator {
     public static List<GeneratedBook> generateBooks(String seed, int count) {
@@ -30,5 +31,13 @@ public class LoreGenerator {
         }
 
         return books;
+    }
+    public static GeneratedBook generateBook(Set<String> tags) {
+        List<String> pages = new ArrayList<>();
+        pages.add("The land here feels different...");
+        pages.add("Whispers of: " + String.join(", ", tags));
+        pages.add("Be cautious. You are not alone.");
+
+        return new GeneratedBook("Strange Journal", "Unknown", pages);
     }
 }

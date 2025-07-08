@@ -1,5 +1,10 @@
 package com.thunder.loregenerator.registry;
 
+import com.thunder.loregenerator.world.ItemFramePlacer;
+import com.thunder.loregenerator.world.LecternPlacer;
+import com.thunder.loregenerator.world.ShrinePlacer;
+import com.thunder.loregenerator.world.SignPlacer;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,9 +28,10 @@ public class LoreFeatureRegistry {
     }
 
     public static void bootstrap() {
-        register(new LoreFeatureType("sign", Set.of("sign", "danger"), com.loregenerator.world.SignPlacer::place));
-        register(new LoreFeatureType("lectern", Set.of("book", "survivor"), com.serverloregenerator.world.LecternPlacer::place));
-        register(new LoreFeatureType("shrine", Set.of("magic", "cult"), com.serverloregenerator.world.ShrinePlacer::place));
-        register(new LoreFeatureType("item_frame", Set.of("note", "anomaly"), com.serverloregenerator.world.ItemFramePlacer::place));
+        register(new LoreFeatureType("sign", Set.of("sign", "danger"), SignPlacer::place));
+        register(new LoreFeatureType("lectern", Set.of("book", "survivor"), LecternPlacer::place));
+        register(new LoreFeatureType("shrine", Set.of("magic", "cult"), ShrinePlacer::place));
+        register(new LoreFeatureType("item_frame", Set.of("note", "anomaly"), ItemFramePlacer::place));
+
     }
 }
