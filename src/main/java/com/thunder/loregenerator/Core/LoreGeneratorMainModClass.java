@@ -2,7 +2,6 @@ package com.thunder.loregenerator.Core;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.thunder.loregenerator.config.LoreConfig;
-import com.thunder.loregenerator.lore.LoreManager;
 import com.thunder.loregenerator.lore.PreGeneratedLoreLoader;
 import com.thunder.loregenerator.registry.LoreFeatureRegistry;
 import net.minecraft.commands.CommandSourceStack;
