@@ -30,7 +30,7 @@ public class OpenAILoreGenerator {
 
             JsonObject payload = new JsonObject();
             String model = LoreConfig.OPENAI_MODEL.get();
-            payload.addProperty("model", model == null || model.isBlank() ? "gpt-4o-mini" : model);
+            payload.addProperty("model", model == null || model.isBlank() ? "gpt-4o" : model);
             payload.add("messages", messages);
             payload.addProperty("temperature", 0.8);
             payload.addProperty("max_tokens", 500);

@@ -11,6 +11,10 @@ public class LoreManager {
         GeneratedBook pregen = PreGeneratedLoreLoader.getBookForTags(tags);
         if (pregen != null) return CompletableFuture.completedFuture(pregen);
 
+        if (!LoreConfig.AI_GENERATED.get()) {
+            return CompletableFuture.completedFuture(LoreGenerator.generateBook(tags));
+        }
+
         String key = LoreConfig.OPENAI_API_KEY.get();
         if (key == null || key.isBlank()) {
             key = System.getenv("OPENAI_API_KEY");

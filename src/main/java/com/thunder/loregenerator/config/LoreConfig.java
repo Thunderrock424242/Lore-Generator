@@ -19,7 +19,8 @@ public class LoreConfig {
                 .define("world_description", "The world is shattered and strange anomalies emerge from the caves.");
 
         AI_GENERATED = builder
-                .comment("Use AI to generate lore based on world_description")
+                .comment("Use OpenAI ChatGPT-4o to generate lore based on world_description. "
+                        + "Set to false to use the built-in generator instead of AI.")
                 .define("ai_generated", true);
 
         OPENAI_API_KEY = builder
@@ -27,8 +28,8 @@ public class LoreConfig {
                 .define("openai_api_key", "");
 
         OPENAI_MODEL = builder
-                .comment("Model to use for OpenAI lore generation")
-                .define("openai_model", "gpt-4o-mini");
+                .comment("Model to use for OpenAI lore generation. Recommended: gpt-4o.")
+                .define("openai_model", "gpt-4o");
 
         LORE_GENERATION_MODE = builder
                 .comment("Mode: live, fallback, or generate_and_export")

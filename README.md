@@ -31,3 +31,11 @@ The mod can use OpenAI for lore generation. Set your API key either in the
 environment variable. Leaving the field blank and using the environment
 variable keeps the key out of plain-text config files. Avoid committing your
 personal API key to version control.
+
+We recommend using OpenAI's ChatGPT-4o model (`openai_model: gpt-4o`) for the
+most coherent lore. When `ai_generated` is set to `true` and an API key is
+provided, lore is generated through ChatGPT-4o.
+
+If you prefer not to use AI, set `ai_generated` to `false` or omit the API key
+and the mod will fall back to its built-in generator, which creates simple
+placeholder books.
