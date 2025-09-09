@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.thunder.loregenerator.config.LoreConfig;
 import com.thunder.loregenerator.lore.PreGeneratedLoreLoader;
 import com.thunder.loregenerator.registry.LoreFeatureRegistry;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -11,6 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.fml.loading.FMLPaths;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,6 +24,8 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,8 +58,7 @@ public class LoreGeneratorMainModClass {
 
         // Register global events
         NeoForge.EVENT_BUS.register(this);
-
-
+        deleteOldConfig();
         container.registerConfig(ModConfig.Type.SERVER, LoreConfig.CONFIG);
     }
 
@@ -101,5 +104,21 @@ public class LoreGeneratorMainModClass {
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
 
+    }
+
+    private void deleteOldConfig() {
+        Path path = FMLPaths.CONFIGDIR.get().resolve(ModConstants.MOD_ID + "-server.toml");
+        if (Files.exists(path)) {
+            try (CommentedFileConfig config = CommentedFileConfig.builder(path).build()) {
+                config.load();
+                int version = config.contains("server_lore.config_version") ? config.getInt("server_lore.config_version") : 0;
+                if (version < LoreConfig.CURRENT_VERSION) {
+                    Files.delete(path);
+                    LOGGER.info("Deleted outdated config file {}", path);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to check config version", e);
+            }
+        }
     }
 }
