@@ -22,12 +22,12 @@ public class LorePlacementHandler {
         tags.addAll(LoreTagDetector.detectTags(com.thunder.loregenerator.config.LoreConfig.WORLD_DESCRIPTION.get()));
         tags.addAll(BiomeTagHelper.getTagsForBiome(biomeId));
 
-        var book = LoreManager.getBookForTags(tags);
-        if (book == null) return;
-
-        LoreFeatureType feature = LoreFeatureRegistry.getWeightedFeature(tags);
-        if (feature != null) {
-            feature.placer().accept(new LorePlacementContext(level, pos, book, tags));
-        }
+        LoreManager.getBookForTagsAsync(tags).thenAccept(book -> {
+            if (book == null) return;
+            LoreFeatureType feature = LoreFeatureRegistry.getWeightedFeature(tags);
+            if (feature != null) {
+                level.getServer().execute(() -> feature.placer().accept(new LorePlacementContext(level, pos, book, tags)));
+            }
+        });
     }
 }

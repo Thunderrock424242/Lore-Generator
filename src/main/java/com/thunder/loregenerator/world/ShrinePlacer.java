@@ -9,6 +9,8 @@ public class ShrinePlacer {
         ServerLevel level = ctx.level();
         BlockPos pos = ctx.pos();
 
+        if (!level.isEmptyBlock(pos) || !level.isEmptyBlock(pos.above())) return;
+
         level.setBlock(pos, Blocks.OBSIDIAN.defaultBlockState(), 3);
         level.setBlock(pos.above(), Blocks.ENCHANTING_TABLE.defaultBlockState(), 3);
     }

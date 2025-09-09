@@ -1,7 +1,5 @@
 package com.thunder.loregenerator.config;
 
-import net.neoforged.fml.config.ConfigTracker;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class LoreConfig {
@@ -10,6 +8,7 @@ public class LoreConfig {
     public static final ModConfigSpec.BooleanValue AI_GENERATED;
     public static final ModConfigSpec.ConfigValue<String> OPENAI_API_KEY;
     public static final ModConfigSpec.ConfigValue<String> LORE_GENERATION_MODE;
+    public static final ModConfigSpec.ConfigValue<String> OPENAI_MODEL;
 
     static {
         var builder = new ModConfigSpec.Builder();
@@ -24,8 +23,12 @@ public class LoreConfig {
                 .define("ai_generated", true);
 
         OPENAI_API_KEY = builder
-                .comment("Optional OpenAI API key. Leave blank to disable live AI lore.")
+                .comment("Optional OpenAI API key. Leave blank to use the OPENAI_API_KEY environment variable.")
                 .define("openai_api_key", "");
+
+        OPENAI_MODEL = builder
+                .comment("Model to use for OpenAI lore generation")
+                .define("openai_model", "gpt-4o-mini");
 
         LORE_GENERATION_MODE = builder
                 .comment("Mode: live, fallback, or generate_and_export")

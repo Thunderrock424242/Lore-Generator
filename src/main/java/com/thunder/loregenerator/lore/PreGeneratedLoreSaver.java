@@ -12,8 +12,9 @@ import java.util.Set;
 public class PreGeneratedLoreSaver {
     private static final File FILE = new File("config/tagged_books.json");
 
-    public static void save(String title, String author, List<String> pages, Set<String> tags) {
+    public static synchronized void save(String title, String author, List<String> pages, Set<String> tags) {
         try {
+            FILE.getParentFile().mkdirs();
             JsonObject book = new JsonObject();
             book.addProperty("title", title);
             book.addProperty("author", author);

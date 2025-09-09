@@ -15,6 +15,8 @@ public class SignPlacer {
         BlockPos pos = ctx.pos();
         GeneratedBook book = ctx.book();
 
+        if (!level.isEmptyBlock(pos)) return;
+
         // Place the standing sign
         BlockState state = Blocks.OAK_SIGN.defaultBlockState();
         level.setBlock(pos, state, 3);
@@ -22,12 +24,20 @@ public class SignPlacer {
         if (level.getBlockEntity(pos) instanceof SignBlockEntity sign) {
             SignText text = sign.getFrontText();
 
-            // Set the first 2 lines using the new API
-            text = text.setMessage(0, Component.literal("Note:"));
-            text = text.setMessage(1, Component.literal("Beware the glow."));
+            String content = book.pages().isEmpty() ? book.title() : book.pages().get(0);
+            String[] lines = content.split("\\R");
+            if (lines.length > 0) {
+                text = text.setMessage(0, Component.literal(truncate(lines[0])));
+            }
+            if (lines.length > 1) {
+                text = text.setMessage(1, Component.literal(truncate(lines[1])));
+            }
 
-            // Apply the updated SignText back to the sign
             sign.setText(text, true);
         }
+    }
+
+    private static String truncate(String s) {
+        return s.length() > 15 ? s.substring(0, 15) : s;
     }
 }

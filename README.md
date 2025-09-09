@@ -19,7 +19,15 @@ in the Minecraft codebase. These names are covered by a specific license. All mo
 license. For the latest license text, refer to the mapping file itself, or the reference copy here:
 https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
 
-Additional Resources: 
+Additional Resources:
 ==========
-Community Documentation: https://docs.neoforged.net/  
+Community Documentation: https://docs.neoforged.net/
 NeoForged Discord: https://discord.neoforged.net/
+
+Configuration
+-------------
+The mod can use OpenAI for lore generation. Set your API key either in the
+`openai_api_key` field of the configuration file or via the `OPENAI_API_KEY`
+environment variable. Leaving the field blank and using the environment
+variable keeps the key out of plain-text config files. Avoid committing your
+personal API key to version control.
