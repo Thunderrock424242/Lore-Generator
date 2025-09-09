@@ -2,26 +2,28 @@ package com.thunder.loregenerator.lore;
 
 
 import com.thunder.loregenerator.config.LoreConfig;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class LoreManager {
 
-    public static GeneratedBook getBookForTags(Set<String> tags) {
-        // ✅ 1. Check for pre-generated lore
+    public static CompletableFuture<GeneratedBook> getBookForTagsAsync(Set<String> tags) {
         GeneratedBook pregen = PreGeneratedLoreLoader.getBookForTags(tags);
-        if (pregen != null) return pregen;
+        if (pregen != null) return CompletableFuture.completedFuture(pregen);
 
-        // ✅ 2. Use OpenAI if enabled and configured
         String key = LoreConfig.OPENAI_API_KEY.get();
-        if (!key.isBlank() && LoreConfig.LORE_GENERATION_MODE.get().equalsIgnoreCase("live")) {
-            GeneratedBook aiBook = OpenAILoreGenerator.generateBook(tags, LoreConfig.WORLD_DESCRIPTION.get(), key);
-            if (aiBook != null) return aiBook;
+        if (key == null || key.isBlank()) {
+            key = System.getenv("OPENAI_API_KEY");
+        }
+        if (key != null && !key.isBlank() && LoreConfig.LORE_GENERATION_MODE.get().equalsIgnoreCase("live")) {
+            return OpenAILoreGenerator.generateBookAsync(tags, LoreConfig.WORLD_DESCRIPTION.get(), key)
+                    .thenApply(book -> book != null ? book : LoreGenerator.generateBook(tags));
         }
 
-        // ✅ 3. Fallback to template/local generator
-        return LoreGenerator.generateBook(tags);
+        return CompletableFuture.completedFuture(LoreGenerator.generateBook(tags));
+    }
+
+    public static GeneratedBook getBookForTags(Set<String> tags) {
+        return getBookForTagsAsync(tags).join();
     }
 }

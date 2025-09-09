@@ -6,24 +6,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.thunder.loregenerator.config.LoreConfig;
 
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class OpenAILoreGenerator {
-    public static GeneratedBook generateBook(Set<String> tags, String description, String apiKey) {
+    public static CompletableFuture<GeneratedBook> generateBookAsync(Set<String> tags, String description, String apiKey) {
         try {
-            URL url = new URL("https://api.openai.com/v1/chat/completions");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Authorization", "Bearer " + apiKey);
-            conn.setRequestProperty("Content-Type", "application/json");
-
             String prompt = "Generate a Minecraft lore book with 2–4 short pages (200 characters each) based on this world: " + description +
                     ". Themes: " + String.join(", ", tags) + ". Return JSON with fields 'title', 'author', 'pages'.";
 
@@ -35,38 +29,55 @@ public class OpenAILoreGenerator {
             messages.add(message);
 
             JsonObject payload = new JsonObject();
-            payload.addProperty("model", "gpt-4");
+            String model = LoreConfig.OPENAI_MODEL.get();
+            payload.addProperty("model", model == null || model.isBlank() ? "gpt-4o-mini" : model);
             payload.add("messages", messages);
             payload.addProperty("temperature", 0.8);
             payload.addProperty("max_tokens", 500);
 
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(payload.toString().getBytes());
-            }
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+                    .build();
 
-            try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-                JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-                String content = json.getAsJsonArray("choices")
-                        .get(0).getAsJsonObject()
-                        .get("message").getAsJsonObject()
-                        .get("content").getAsString();
+            return HttpClient.newHttpClient()
+                    .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(response -> {
+                        if (response.statusCode() >= 400) {
+                            System.err.println("OpenAI API error: " + response.body());
+                            return null;
+                        }
+                        JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+                        String content = json.getAsJsonArray("choices")
+                                .get(0).getAsJsonObject()
+                                .get("message").getAsJsonObject()
+                                .get("content").getAsString();
 
-                JsonObject bookObj = JsonParser.parseString(content).getAsJsonObject();
-                String title = bookObj.get("title").getAsString();
-                String author = bookObj.get("author").getAsString();
-                List<String> pages = bookObj.get("pages").getAsJsonArray().asList().stream()
-                        .map(JsonElement::getAsString)
-                        .collect(Collectors.toList());
+                        JsonObject bookObj = JsonParser.parseString(content).getAsJsonObject();
+                        String title = bookObj.get("title").getAsString();
+                        String author = bookObj.get("author").getAsString();
+                        List<String> pages = bookObj.get("pages").getAsJsonArray().asList().stream()
+                                .map(JsonElement::getAsString)
+                                .collect(Collectors.toList());
 
-                if (LoreConfig.LORE_GENERATION_MODE.get().equalsIgnoreCase("generate_and_export")) {
-                    PreGeneratedLoreSaver.save(title, author, pages, tags);
-                }
+                        if (LoreConfig.LORE_GENERATION_MODE.get().equalsIgnoreCase("generate_and_export")) {
+                            PreGeneratedLoreSaver.save(title, author, pages, tags);
+                        }
 
-                return new GeneratedBook(title, author, pages);
-            }
+                        return new GeneratedBook(title, author, pages);
+                    })
+                    .exceptionally(e -> {
+                        System.err.println("OpenAI generation failed: " + e.getMessage());
+                        return null;
+                    });
         } catch (Exception e) {
-            System.err.println("OpenAI generation failed: " + e.getMessage());
-            return null;
+            return CompletableFuture.failedFuture(e);
         }
+    }
+
+    public static GeneratedBook generateBook(Set<String> tags, String description, String apiKey) {
+        return generateBookAsync(tags, description, apiKey).join();
     }
 }

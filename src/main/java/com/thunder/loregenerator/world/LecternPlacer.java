@@ -22,6 +22,8 @@ public class LecternPlacer {
         BlockPos pos = ctx.pos();
         GeneratedBook book = ctx.book();
 
+        if (!level.isEmptyBlock(pos)) return;
+
         // Place the lectern block
         BlockState state = Blocks.LECTERN.defaultBlockState();
         level.setBlock(pos, state, 3);
