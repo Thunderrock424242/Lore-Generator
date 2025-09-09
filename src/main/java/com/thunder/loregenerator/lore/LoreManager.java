@@ -2,6 +2,7 @@ package com.thunder.loregenerator.lore;
 
 
 import com.thunder.loregenerator.config.LoreConfig;
+import com.thunder.loregenerator.config.ApiKeyStorage;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,10 +16,7 @@ public class LoreManager {
             return CompletableFuture.completedFuture(LoreGenerator.generateBook(tags));
         }
 
-        String key = LoreConfig.OPENAI_API_KEY.get();
-        if (key == null || key.isBlank()) {
-            key = System.getenv("OPENAI_API_KEY");
-        }
+        String key = ApiKeyStorage.loadKey();
         if (key != null && !key.isBlank() && LoreConfig.LORE_GENERATION_MODE.get().equalsIgnoreCase("live")) {
             return OpenAILoreGenerator.generateBookAsync(tags, LoreConfig.WORLD_DESCRIPTION.get(), key)
                     .thenApply(book -> book != null ? book : LoreGenerator.generateBook(tags));
