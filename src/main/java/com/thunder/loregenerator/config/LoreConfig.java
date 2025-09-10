@@ -30,7 +30,12 @@ public class LoreConfig {
                 .define("ai_generated", true);
 
         OPENAI_API_KEY = builder
-                .comment("Optional OpenAI API key. Leave blank to use the OPENAI_API_KEY environment variable.")
+                .comment(
+                        "OpenAI API key. Leave blank to use the OPENAI_API_KEY environment variable.",
+                        "The key lives only in your local config and is never bundled into the mod jar.",
+                        "On first run, a scrambled copy is written to loregenerator.key so you can remove it from this config.",
+                        "Clear this field before sharing your config or modpack so others can't find your key."
+                )
                 .define("openai_api_key", "");
 
         OPENAI_MODEL = builder
@@ -38,7 +43,13 @@ public class LoreConfig {
                 .define("openai_model", "gpt-4o");
 
         LORE_GENERATION_MODE = builder
-                .comment("Mode: live, fallback, or generate_and_export")
+                .comment("""
+                    Lore generation mode:
+                    live - call OpenAI at runtime; falls back to built-in generator on errors
+                    fallback - always use the built-in generator
+                    generate_and_export - use OpenAI once and export results to config/tagged_books.json
+                    """
+                )
                 .define("lore_generation_mode", "fallback");
 
         builder.pop();
