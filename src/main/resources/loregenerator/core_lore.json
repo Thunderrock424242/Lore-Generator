@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Journal of the Hollow",
+    "author": "Unknown Cartographer",
+    "tags": ["cave", "survivor", "book"],
+    "pages": [
+      "We found the hollow by accident. The walls hum when the lanterns dim.",
+      "I marked the path with ash and rope, but the cave keeps shifting.",
+      "If you find this, leave a sign. The stone remembers your name."
+    ]
+  },
+  {
+    "title": "Cult Ledger",
+    "author": "Sister Veyra",
+    "tags": ["cult", "magic", "anomaly"],
+    "pages": [
+      "The choir gathered beneath the fractured light. The ritual holds.",
+      "Offerings are placed where the water glows. The rift listens.",
+      "Do not break the circle. The voices crawl from the cracks."
+    ]
+  },
+  {
+    "title": "Bunker Notes",
+    "author": "Ranger Hal",
+    "tags": ["survivor", "forest", "note"],
+    "pages": [
+      "Supply caches are buried under the old pines, north of the creek.",
+      "If the storm returns, shelter near the ruined tower. Avoid the bog.",
+      "Keep moving. The trees whisper when the sun goes out."
+    ]
+  },
+  {
+    "title": "Rift Warnings",
+    "author": "Archivist Lorne",
+    "tags": ["sign", "anomaly", "cave"],
+    "pages": [
+      "Beware the glow within the stone. It bends the mind.",
+      "Do not follow the voices. They are echoes, not allies.",
+      "Seal every entrance you open. The deep is hungry."
+    ]
+  }
+]
